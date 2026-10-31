@@ -28,6 +28,7 @@ const PANEL_PART_MAP: Record<PanelId, string[]> = {
 // ─── Scene Part Component ────────────────────────────────────────────────────
 
 interface AssemblyPartProps {
+  name?: string;
   explodedOffset: THREE.Vector3;
   explodeProgress: number;
   highlighted: boolean;

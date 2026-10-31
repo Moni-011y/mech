@@ -121,6 +121,7 @@ export default function CadPatternMesh({
           </lineLoop>
 
           {/* Center Rotation Axis Line */}
+          {/* @ts-expect-error: Three.js <line> conflicts with SVG intrinsic element type */}
           <line geometry={axisGeo}>
             <lineBasicMaterial color="#f59e0b" />
           </line>

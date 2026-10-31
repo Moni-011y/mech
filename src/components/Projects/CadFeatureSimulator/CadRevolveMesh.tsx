@@ -103,6 +103,7 @@ export default function CadRevolveMesh({
     <group ref={groupRef} position={[0, 0, 0]}>
       {/* Central Axis of Revolution */}
       <group>
+        {/* @ts-expect-error: Three.js <line> conflicts with SVG intrinsic element type */}
         <line geometry={axisGeo}>
           <lineBasicMaterial color="#f59e0b" />
         </line>

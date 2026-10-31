@@ -200,6 +200,7 @@ export default function CadLoftMesh({
       {/* Guide Curve Rails */}
       {(isGuidesPhase || isSkinningPhase || isCompletedPhase) &&
         guideGeos.map((geo, idx) => (
+          // @ts-expect-error: Three.js <line> conflicts with SVG intrinsic element type
           <line key={idx} geometry={geo}>
             <lineBasicMaterial color="#22d3ee" />
           </line>

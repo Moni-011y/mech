@@ -454,7 +454,7 @@ function TopicTerminology() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<number | null>(null);
   const r1 = useScrollReveal();
-  const r2 = useScrollReveal();
+  const _r2 = useScrollReveal();
   const terms = [
     { id: 1, term: 'Gear', symbol: '', def: 'A mechanical machine element with teeth arranged around a circular body, used to transmit rotational motion and torque between shafts.', sig: 'Foundation of mechanical power transmission.' },
     { id: 2, term: 'Gear Teeth', symbol: 'Z', def: 'Projections around the gear circumference that engage with another gear to transmit motion.', sig: 'Tooth count (Z) directly determines gear ratio.' },
@@ -1041,7 +1041,7 @@ function TopicManualCalc() {
 function TopicHowToDraw() {
   const [drawStep, setDrawStep] = useState(1);
   const TOTAL_STEPS = 10;
-  const teeth = 20, m = 2, alpha = 20, pitchR = 20, outsideR = 22, rootR = 17.5;
+  const teeth = 20, _m = 2, _alpha = 20, pitchR = 20, outsideR = 22, rootR = 17.5;
   const angSpacing = 360 / teeth;
   const r1 = useScrollReveal();
   const stepDescs = [

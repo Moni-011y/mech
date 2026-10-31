@@ -706,7 +706,7 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
                   {caseStudyTabs.map((tab) => (
                     <button
                       key={tab.key}
-                      onClick={() => setActiveTab(tab.key)}
+                      onClick={() => setActiveTab(tab.key as AnalysisMode)}
                       className={`text-left p-3 rounded-xl border transition-all ${
                         activeTab === tab.key
                           ? 'border-accent bg-accent/10 text-accent'
@@ -727,7 +727,7 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
                 {caseStudyTabs.map((tab) => (
                   <button
                     key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
+                    onClick={() => setActiveTab(tab.key as AnalysisMode)}
                     className={`text-[10px] font-mono font-bold px-3 py-1.5 rounded-lg border transition-all ${
                       activeTab === tab.key
                         ? 'bg-accent text-background border-accent'

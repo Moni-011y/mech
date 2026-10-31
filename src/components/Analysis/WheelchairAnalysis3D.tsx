@@ -201,7 +201,7 @@ function ForceArrow({ massKg, visible }: { massKg: number; visible: boolean }) {
     }
   });
   if (!visible) return null;
-  const label = `${massKg} kg ↓`;
+  const _label = `${massKg} kg ↓`;
   return (
     <group ref={arrowRef} position={[0, 1.35, 0]}>
       {/* Arrow shaft */}
@@ -493,7 +493,7 @@ function CameraController({ preset, resetKey }: { preset: ViewPreset; resetKey: 
 
 function LifeChart({ massKg }: { massKg: number }) {
   const life = calcFatigueLife(massKg);
-  const lifeStr = !isFinite(life) ? '> 10⁷ cycles (infinite life)' : `~${(life / 1e6).toFixed(2)} × 10⁶ cycles`;
+  const _lifeStr = !isFinite(life) ? '> 10⁷ cycles (infinite life)' : `~${(life / 1e6).toFixed(2)} × 10⁶ cycles`;
   const Se = YIELD_STRENGTH_MPA * 0.4;
   const sigma = calcMaxStressMPa(massKg);
   const xNorm = Math.min(sigma / YIELD_STRENGTH_MPA, 1);

@@ -49,11 +49,13 @@ export default function Topics() {
   const [calcTeeth2, setCalcTeeth2] = useState(60);
   const [calcRpmIn, setCalcRpmIn] = useState(1500);
 
+  void setCalcModule; void setCalcTeeth1; void setCalcTeeth2; void setCalcRpmIn;
+
   const pitchDia1 = calcModule * calcTeeth1;
   const pitchDia2 = calcModule * calcTeeth2;
-  const centerDist = (pitchDia1 + pitchDia2) / 2;
+  const _centerDist = (pitchDia1 + pitchDia2) / 2;
   const gearRatio = calcTeeth2 / calcTeeth1;
-  const rpmOut = calcRpmIn / gearRatio;
+  const _rpmOut = calcRpmIn / gearRatio;
 
   // Render content based on active route path
   const isRoute = (path: string) => pathname === path || pathname.startsWith(path + '/');

@@ -181,6 +181,7 @@ export default function CadSweepMesh({
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
       {/* 3D Trajectory Centerline */}
+      {/* @ts-expect-error: Three.js <line> conflicts with SVG intrinsic element type */}
       <line geometry={pathGeo}>
         <lineBasicMaterial color="#f59e0b" />
       </line>
