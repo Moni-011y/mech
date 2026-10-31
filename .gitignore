@@ -12,9 +12,9 @@ dist
 dist-ssr
 *.local
 
-# Large generated assets / videos (long filenames not supported by Git on Windows)
+# Large temporary assets / videos
 src/assets/tmp/
-*.mp4
+src/**/*.mp4
 
 # Editor directories and files
 .vscode/*
