@@ -33,36 +33,6 @@ export default function Workflow() {
   // Section 1: Design Engineer State
   const [deResponsibility, setDeResponsibility] = useState('Product Development');
 
-  // Section 2: Checklist State (Persisted in localStorage)
-  const [checklist, setChecklist] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem('mech_de_checklist');
-    return saved
-      ? JSON.parse(saved)
-      : {
-          cadModel: false,
-          drafting: false,
-          dimensions: false,
-          gdt: false,
-          tolerances: false,
-          bom: false,
-          titleBlock: false,
-          analysis: false,
-          designReview: false,
-          finalRelease: false,
-        };
-  });
-
-  useEffect(() => {
-    localStorage.setItem('mech_de_checklist', JSON.stringify(checklist));
-  }, [checklist]);
-
-  const toggleChecklistItem = (key: string) => {
-    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const checklistCount = Object.values(checklist).filter(Boolean).length;
-  const checklistPercent = Math.round((checklistCount / 10) * 100);
-
   // Design Engineer Responsibilities (Book Chapter 1)
   const deResponsibilities: Record<string, { desc: string; icon: string }> = {
     'Product Development': {
@@ -271,73 +241,6 @@ export default function Workflow() {
             <EngineeringAnalysisWorkflow onBackToOverview={() => changeTab('overview')} useVideoPlayer={true} />
           </div>
         )}
-
-        {/* ========================================================= */}
-        {/* DESIGN ENGINEER CHECKLIST (Book Reference)                */}
-        {/* ========================================================= */}
-        <div className="bg-surface p-6 rounded-xl border border-border space-y-6 shadow">
-          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-            <div>
-              <h3 className="text-lg font-bold text-accent tracking-wider uppercase">
-                DESIGN ENGINEER'S CHECKLIST
-              </h3>
-              <p className="text-xs text-text-secondary">
-                Track compliance prior to final drawing release and production handover.
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-mono font-bold text-accent bg-accent/10 px-3 py-1.5 rounded-lg border border-accent/20">
-                {checklistCount} of 10 Completed ({checklistPercent}%)
-              </span>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full h-2.5 bg-surface-elevated rounded-full overflow-hidden border border-border">
-            <div
-              className="h-full bg-accent transition-all duration-300"
-              style={{ width: `${checklistPercent}%` }}
-            ></div>
-          </div>
-
-          {/* Checklist Items */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            {[
-              { key: 'cadModel', label: 'CAD Model Completed' },
-              { key: 'drafting', label: 'Drafting Completed' },
-              { key: 'dimensions', label: 'Dimensions Verified' },
-              { key: 'gdt', label: 'GD&T Applied' },
-              { key: 'tolerances', label: 'Tolerances Checked' },
-              { key: 'bom', label: 'BOM Prepared' },
-              { key: 'titleBlock', label: 'Title Block Verified' },
-              { key: 'analysis', label: 'Analysis Completed' },
-              { key: 'designReview', label: 'Design Review Approved' },
-              { key: 'finalRelease', label: 'Final Release Document Prepared' },
-            ].map((item) => {
-              const isChecked = checklist[item.key];
-              return (
-                <div
-                  key={item.key}
-                  onClick={() => toggleChecklistItem(item.key)}
-                  className={`p-3 rounded-lg border flex items-center justify-between cursor-pointer transition ${
-                    isChecked
-                      ? 'bg-accent/10 border-accent/40 text-text-primary'
-                      : 'bg-surface-elevated border-border text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  <span className="font-semibold">{item.label}</span>
-                  <div
-                    className={`w-5 h-5 rounded flex items-center justify-center font-bold text-xs border ${
-                      isChecked ? 'bg-accent text-background border-accent' : 'bg-surface border-border'
-                    }`}
-                  >
-                    {isChecked ? '✓' : ''}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </main>
     </div>
   );

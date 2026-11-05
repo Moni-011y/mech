@@ -552,9 +552,10 @@ function ColorLegend({ mode }: { mode: AnalysisMode }) {
 export interface WheelchairAnalysis3DProps {
   activeTab: AnalysisMode;
   onTabChange: (tab: AnalysisMode) => void;
+  onSwitchToVideo?: () => void;
 }
 
-export default function WheelchairAnalysis3D({ activeTab, onTabChange }: WheelchairAnalysis3DProps) {
+export default function WheelchairAnalysis3D({ activeTab, onTabChange, onSwitchToVideo }: WheelchairAnalysis3DProps) {
   const [massKg, setMassKg] = useState(150);
   const [playing, setPlaying] = useState(true);
   const [animTime, setAnimTime] = useState(0);
@@ -622,7 +623,17 @@ export default function WheelchairAnalysis3D({ activeTab, onTabChange }: Wheelch
           <span className="text-[10px] font-mono text-[#16B8A6] font-bold tracking-widest">ENGINEERING ANALYSIS REPORT</span>
           <h3 className="text-sm font-bold text-white mt-0.5">Wheelchair Frame — Structural Analysis</h3>
         </div>
-        <div className="flex gap-2 text-[10px] font-mono">
+        <div className="flex items-center gap-2 text-[10px] font-mono">
+          {onSwitchToVideo && (
+            <button
+              onClick={onSwitchToVideo}
+              className="px-2.5 py-1 rounded bg-[#16B8A6]/15 hover:bg-[#16B8A6]/25 border border-[#16B8A6]/40 text-[#16B8A6] font-bold flex items-center gap-1.5 transition"
+              title="Switch to FEA Video Simulation"
+            >
+              <span>🎥</span>
+              <span>WATCH VIDEO</span>
+            </button>
+          )}
           <span className="px-2.5 py-1 rounded bg-[#3B82F6]/15 border border-[#3B82F6]/30 text-[#3B82F6] font-bold">LOAD: {massKg} kg</span>
           <span className="px-2.5 py-1 rounded bg-[#30363D] border border-[#30363D] text-[#9DA7B0]">CONCEPTUAL / ILLUSTRATIVE</span>
         </div>

@@ -17,27 +17,6 @@ export default function TitleBlockLearningSection({ onBackToTopics }: TitleBlock
   // Interactive sample title block active inspected field
   const [inspectedSampleField, setInspectedSampleField] = useState<string>('partName');
 
-  // Checklist state (10 items)
-  const [checkedList, setCheckedList] = useState<Record<string, boolean>>({
-    cadModel: true,
-    drafting: true,
-    dimensions: true,
-    gdt: true,
-    tolerances: true,
-    bom: true,
-    titleBlock: true,
-    analysis: false,
-    designReview: false,
-    finalRelease: false,
-  });
-
-  const toggleCheck = (key: string) => {
-    setCheckedList((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const completedChecksCount = Object.values(checkedList).filter(Boolean).length;
-  const checklistPercent = Math.round((completedChecksCount / 10) * 100);
-
   // Quick Review Quiz State
   const [quizAnswers, setQuizAnswers] = useState<Record<number, string | null>>({
     1: null,
@@ -136,7 +115,6 @@ export default function TitleBlockLearningSection({ onBackToTopics }: TitleBlock
               { id: 'tb-sample-studio', label: 'Sample Studio' },
               { id: 'tb-shaft-example', label: 'Drive Shaft' },
               { id: 'tb-revision-flow', label: 'Revisions' },
-              { id: 'tb-checklist', label: 'Checklist' },
               { id: 'tb-quiz', label: 'Quick Quiz' },
               { id: 'tb-takeaways', label: 'Takeaways' },
             ].map((item) => (
@@ -1483,75 +1461,7 @@ export default function TitleBlockLearningSection({ onBackToTopics }: TitleBlock
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          9. SECTION — TITLE BLOCK VERIFICATION CHECKLIST
-          ───────────────────────────────────────────────────────────── */}
-      <section id="tb-checklist" className="bg-surface rounded-2xl border border-border p-6 sm:p-8 space-y-6 shadow-md">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-border/60 pb-4">
-          <div>
-            <span className="text-xs font-mono text-accent font-bold uppercase tracking-wider">
-              QUALITY RELEASE GATE
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mt-1">
-              Before Releasing an Engineering Drawing
-            </h2>
-          </div>
-          <div className="text-right">
-            <span className="text-xs font-mono font-bold text-accent bg-accent/10 px-3 py-1.5 rounded-lg border border-accent/20">
-              {completedChecksCount} of 10 Verified ({checklistPercent}%)
-            </span>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full h-2.5 bg-surface-elevated rounded-full overflow-hidden border border-border">
-          <div
-            className="h-full bg-accent transition-all duration-300"
-            style={{ width: `${checklistPercent}%` }}
-          />
-        </div>
-
-        {/* 10 Verification Checks */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-          {[
-            { key: 'cadModel', label: 'CAD Model Completed & Fully Constrained' },
-            { key: 'drafting', label: 'Drafting Completed with Proper Views' },
-            { key: 'dimensions', label: 'Dimensions Verified with Zero Missing Callouts' },
-            { key: 'gdt', label: 'GD&T Applied with Datum Reference Frames' },
-            { key: 'tolerances', label: 'Tolerances Checked Against Machining Capability' },
-            { key: 'bom', label: 'BOM Prepared & Balloon Numbers Mapped' },
-            { key: 'titleBlock', label: 'Title Block Verified with Scale & Material' },
-            { key: 'analysis', label: 'Analysis Completed Where Applicable' },
-            { key: 'designReview', label: 'Design Review Approved by Lead Engineer' },
-            { key: 'finalRelease', label: 'Final Release Document Prepared & Vaulted' },
-          ].map((item) => (
-            <label
-              key={item.key}
-              className={`p-3 rounded-lg border flex items-center gap-3 cursor-pointer transition ${
-                checkedList[item.key]
-                  ? 'bg-accent/10 border-accent/40 text-text-primary'
-                  : 'bg-surface-elevated border-border text-text-secondary hover:border-accent/30'
-              }`}
-            >
-              <input
-                type="checkbox"
-                checked={!!checkedList[item.key]}
-                onChange={() => toggleCheck(item.key)}
-                className="rounded border-border text-accent focus:ring-accent w-4 h-4 cursor-pointer"
-              />
-              <span className={checkedList[item.key] ? 'font-semibold text-text-primary' : ''}>
-                {item.label}
-              </span>
-            </label>
-          ))}
-        </div>
-
-        <p className="text-[11px] text-text-secondary italic">
-          Note: This checklist serves as an educational learning aid to illustrate the rigorous verification steps required prior to industrial production release.
-        </p>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────
-          10. QUICK REVIEW QUIZ (5 QUESTIONS)
+          9. QUICK REVIEW QUIZ (5 QUESTIONS)
           ───────────────────────────────────────────────────────────── */}
       <section id="tb-quiz" className="bg-surface rounded-2xl border border-border p-6 sm:p-8 space-y-6 shadow-md">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-border/60 pb-4">
@@ -1700,7 +1610,7 @@ export default function TitleBlockLearningSection({ onBackToTopics }: TitleBlock
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          11. FINAL KEY TAKEAWAYS
+          10. FINAL KEY TAKEAWAYS
           ───────────────────────────────────────────────────────────── */}
       <section id="tb-takeaways" className="bg-surface rounded-2xl border border-border p-6 sm:p-8 space-y-6 shadow-md">
         <div className="border-b border-border/60 pb-3">

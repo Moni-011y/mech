@@ -8,7 +8,6 @@ import {
   DimensionalToleranceTypesSection,
   DimVsGeomSection,
   GeneralToleranceSection,
-  ChecklistAndSummarySection,
 } from '../components/Tolerance/Chapter9ToleranceSections';
 
 // ─────────────────────────────────────────────
@@ -373,7 +372,6 @@ const LESSONS = [
   { id: 'lab', label: '3D Shaft/Hole Lab', icon: '🧊', badge: '3D' },
   { id: 'diagram', label: 'Tolerance Diagram', icon: '📊', badge: 'SVG' },
   { id: 'fits', label: 'Fits Animation', icon: '⚙️', badge: 'ANIM' },
-  { id: 'checklist', label: 'Design Checklist & Summary', icon: '✅', badge: 'GATE' },
   { id: 'videos', label: 'Video Learning', icon: '🎥', badge: 'VIDEOS' },
   { id: 'practice', label: 'Practice Exercises', icon: '✏️', badge: 'QUIZ' },
 ];
@@ -573,13 +571,6 @@ export default function ToleranceModule() {
           {activeLesson === 'general-tol' && (
             <section className="space-y-6">
               <GeneralToleranceSection />
-            </section>
-          )}
-
-          {/* ── DESIGN CHECKLIST & SUMMARY ── */}
-          {activeLesson === 'checklist' && (
-            <section className="space-y-6">
-              <ChecklistAndSummarySection />
             </section>
           )}
 

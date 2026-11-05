@@ -31,28 +31,6 @@ export default function DraftingKnowledgeHub({ onBack }: DraftingKnowledgeHubPro
   // Section 10: Workflow active step
   const [activeWorkflowStep, setActiveWorkflowStep] = useState<number>(1);
 
-  // Section 12: Interactive Checklists
-  const [bestPracticesChecks, setBestPracticesChecks] = useState<Record<number, boolean>>({
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-  });
-
-  const [releaseChecks, setReleaseChecks] = useState<Record<number, boolean>>({
-    1: true,
-    2: true,
-    3: true,
-    4: false,
-    5: true,
-    6: false,
-    7: true,
-    8: false,
-    9: false,
-    10: false,
-  });
-
   // Track scroll position for Back to Top
   useEffect(() => {
     const handleScroll = () => {
@@ -81,17 +59,6 @@ export default function DraftingKnowledgeHub({ onBack }: DraftingKnowledgeHubPro
       });
     }
   };
-
-  const toggleReleaseCheck = (id: number) => {
-    setReleaseChecks((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const toggleBestPracticeCheck = (id: number) => {
-    setBestPracticesChecks((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const releaseCompletedCount = Object.values(releaseChecks).filter(Boolean).length;
-  const releaseProgressPercent = Math.round((releaseCompletedCount / 10) * 100);
 
   return (
     <div className="space-y-12 pb-20 animate-fadeIn text-text-primary">
@@ -1815,30 +1782,19 @@ export default function DraftingKnowledgeHub({ onBack }: DraftingKnowledgeHubPro
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          11. INDUSTRY BEST PRACTICES & DESIGN-RELEASE CHECKLIST
+          11. INDUSTRY BEST PRACTICES & RELEASE GATE
           ───────────────────────────────────────────────────────────── */}
       <section id="drafting-bestpractices" className="bg-surface rounded-2xl border border-border p-6 sm:p-8 space-y-8 shadow-md">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border/60 pb-4">
-          <div>
-            <span className="text-xs font-mono text-accent font-bold uppercase tracking-wider">QUALITY GOVERNANCE</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mt-1">Industry Best Practices & Release Gate</h2>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-text-secondary">Release Gate Status:</span>
-            <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${
-              releaseProgressPercent === 100 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-            }`}>
-              {releaseProgressPercent}% VERIFIED
-            </span>
-          </div>
+        <div className="border-b border-border/60 pb-4">
+          <span className="text-xs font-mono text-accent font-bold uppercase tracking-wider">QUALITY GOVERNANCE</span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mt-1">Industry Best Practices &amp; Release Gate</h2>
         </div>
 
-        {/* 10 Industry Best Practices List */}
+        {/* 10 Industry Best Practices */}
         <div className="space-y-3">
           <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
             <span className="text-accent">📋</span> 10 Core Industry Best Practices
           </h3>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             {[
               { id: 1, text: 'Maintain rigorous revision control across CAD models and drawings.' },
@@ -1852,83 +1808,41 @@ export default function DraftingKnowledgeHub({ onBack }: DraftingKnowledgeHubPro
               { id: 9, text: 'Conduct cross-functional peer design reviews before production release.' },
               { id: 10, text: 'Maintain accessible, organized project drawing records and neutral STEP archives.' },
             ].map((bp) => (
-              <div
-                key={bp.id}
-                onClick={() => toggleBestPracticeCheck(bp.id)}
-                className={`p-3 rounded-xl border text-xs transition cursor-pointer flex items-center gap-3 ${
-                  bestPracticesChecks[bp.id]
-                    ? 'bg-surface-elevated border-accent/40 text-text-primary'
-                    : 'bg-surface border-border text-text-secondary'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={!!bestPracticesChecks[bp.id]}
-                  onChange={() => toggleBestPracticeCheck(bp.id)}
-                  className="rounded border-border text-accent focus:ring-accent cursor-pointer w-4 h-4"
-                />
+              <div key={bp.id} className="p-3 rounded-xl border text-xs flex items-center gap-3 bg-surface border-border text-text-secondary">
+                <span className="text-[10px] font-mono text-accent font-bold shrink-0">{String(bp.id).padStart(2, '0')}</span>
                 <span className="font-medium">{bp.text}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Final Design-Release Verification Checklist with Progress */}
+        {/* Final Design-Release Verification Gate */}
         <div className="p-6 rounded-2xl bg-surface-elevated border border-accent/40 space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-            <div>
-              <h3 className="text-base font-bold text-accent flex items-center gap-2">
-                <span>🛡️</span> Final Design-Release Verification Gate
-              </h3>
-              <p className="text-xs text-text-secondary">
-                Mandatory checks before stamping drawings for shop-floor machining and procurement release.
-              </p>
-            </div>
-            <div className="text-right shrink-0">
-              <span className="text-xs font-mono font-bold text-accent">{releaseCompletedCount} / 10 Completed</span>
-            </div>
+          <div>
+            <h3 className="text-base font-bold text-accent flex items-center gap-2">
+              <span>🛡️</span> Final Design-Release Verification Gate
+            </h3>
+            <p className="text-xs text-text-secondary mt-1">
+              Mandatory checks before stamping drawings for shop-floor machining and procurement release.
+            </p>
           </div>
-
-          {/* Progress Bar */}
-          <div className="w-full h-2 rounded-full bg-surface border border-border overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-accent to-emerald-400 transition-all duration-300"
-              style={{ width: `${releaseProgressPercent}%` }}
-            />
-          </div>
-
-          {/* 10 Checklist Items */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
-              { id: 1, label: 'CAD model completed & fully constrained.' },
-              { id: 2, label: 'Engineering drawing views generated & aligned.' },
-              { id: 3, label: 'Dimensions verified with zero missing callouts.' },
-              { id: 4, label: 'GD&T applied where required with datum references.' },
-              { id: 5, label: 'Tolerances and fits checked against machining capabilities.' },
-              { id: 6, label: 'BOM prepared & balloon numbers mapped.' },
-              { id: 7, label: 'Title block verified with material, scale, and projection.' },
-              { id: 8, label: 'Engineering analysis completed where applicable.' },
-              { id: 9, label: 'Design review approved by Lead Mechanical Engineer.' },
-              { id: 10, label: 'Final release documentation stamped & archived.' },
-            ].map((item) => (
-              <label
-                key={item.id}
-                className={`p-2.5 rounded-lg border text-xs flex items-center gap-2.5 transition cursor-pointer ${
-                  releaseChecks[item.id]
-                    ? 'bg-accent/10 border-accent/40 text-text-primary'
-                    : 'bg-surface border-border text-text-secondary hover:border-accent/30'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={!!releaseChecks[item.id]}
-                  onChange={() => toggleReleaseCheck(item.id)}
-                  className="rounded border-border text-accent focus:ring-accent cursor-pointer w-4 h-4"
-                />
-                <span className={releaseChecks[item.id] ? 'font-semibold text-text-primary' : ''}>
-                  {item.label}
-                </span>
-              </label>
+              'CAD model completed & fully constrained.',
+              'Engineering drawing views generated & aligned.',
+              'Dimensions verified with zero missing callouts.',
+              'GD&T applied where required with datum references.',
+              'Tolerances and fits checked against machining capabilities.',
+              'BOM prepared & balloon numbers mapped.',
+              'Title block verified with material, scale, and projection.',
+              'Engineering analysis completed where applicable.',
+              'Design review approved by Lead Mechanical Engineer.',
+              'Final release documentation stamped & archived.',
+            ].map((label, idx) => (
+              <div key={idx} className="p-2.5 rounded-lg border text-xs flex items-center gap-2.5 bg-surface border-border text-text-secondary">
+                <span className="text-[10px] font-mono text-accent font-bold shrink-0">{String(idx + 1).padStart(2, '0')}</span>
+                <span>{label}</span>
+              </div>
             ))}
           </div>
         </div>

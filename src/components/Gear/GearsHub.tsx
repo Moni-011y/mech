@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import GearTerminologyVideoPlayer from './GearTerminologyVideoPlayer';
+import SpurGearVideoPlayer from './SpurGearVideoPlayer';
+import HelicalGearVideoPlayer from './HelicalGearVideoPlayer';
+import BevelGearVideoPlayer from './BevelGearVideoPlayer';
+import WormGearVideoPlayer from './WormGearVideoPlayer';
+import RackPinionVideoPlayer from './RackPinionVideoPlayer';
+import InternalGearVideoPlayer from './InternalGearVideoPlayer';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface GearsHubProps {
@@ -453,6 +460,7 @@ function GearDrawingSVG({ teeth = 20, pitchR = 40, outsideR = 44, rootR = 35, st
 function TopicTerminology() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'video' | 'diagram'>('video');
   const r1 = useScrollReveal();
   const _r2 = useScrollReveal();
   const terms = [
@@ -473,31 +481,88 @@ function TopicTerminology() {
   return (
     <div className="space-y-8">
       <div className="bg-surface rounded-2xl border border-border overflow-hidden">
-        <div className="bg-surface-elevated px-6 py-4 border-b border-border">
-          <span className="text-[10px] font-mono text-accent font-bold">CHAPTER 1 & 3 • SOURCE CONTENT</span>
-          <h2 className="text-xl font-bold text-text-primary mt-0.5">Gear Terminology</h2>
-          <p className="text-xs text-text-secondary mt-1">Fundamental definitions and symbols used in gear engineering.</p>
+        <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span className="text-[10px] font-mono text-accent font-bold">CHAPTER 1 & 3 • SOURCE CONTENT</span>
+            <h2 className="text-xl font-bold text-text-primary mt-0.5">Gear Terminology</h2>
+            <p className="text-xs text-text-secondary mt-1">Fundamental definitions and symbols used in gear engineering.</p>
+          </div>
+          <div className="flex items-center gap-1.5 bg-background p-1 rounded-xl border border-border text-xs font-mono">
+            <button
+              onClick={() => setViewMode('video')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                viewMode === 'video'
+                  ? 'bg-accent text-background shadow-sm'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <span>🎥</span>
+              <span>VIDEO</span>
+            </button>
+            <button
+              onClick={() => setViewMode('diagram')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                viewMode === 'diagram'
+                  ? 'bg-accent text-background shadow-sm'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <span>📐</span>
+              <span>2D DIAGRAM</span>
+            </button>
+          </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-          <div className="p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
-            <div className="w-full max-w-xs h-64"><GearDiagramSVG /></div>
-          </div>
-          <div className="p-6 space-y-3">
-            <h3 className="text-sm font-bold text-text-primary">Gear Anatomy — Key Circles</h3>
-            {[
-              { color: '#3B82F6', label: 'Outside Circle (da)', desc: 'Tip diameter — maximum gear extent' },
-              { color: '#16B8A6', label: 'Pitch Circle (d)', desc: 'Reference circle for all calculations' },
-              { color: '#f59e0b', label: 'Base Circle (db)', desc: 'Origin of involute tooth profile' },
-              { color: '#ef4444', label: 'Root Circle (df)', desc: 'Bottom of tooth space' },
-            ].map(c => (
-              <div key={c.label} className="flex items-start gap-3">
-                <div className="w-3 h-3 rounded-full shrink-0 mt-0.5" style={{ backgroundColor: c.color }} />
-                <div>
-                  <span className="text-xs font-bold text-text-primary">{c.label}</span>
-                  <span className="text-xs text-text-secondary ml-2">{c.desc}</span>
-                </div>
+          <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
+            {viewMode === 'video' ? (
+              <GearTerminologyVideoPlayer
+                className="w-full h-72 sm:h-80 md:h-[340px]"
+                onSwitchToDiagram={() => setViewMode('diagram')}
+                showDiagramToggle={true}
+              />
+            ) : (
+              <div className="w-full flex flex-col items-center">
+                <div className="w-full max-w-xs h-64"><GearDiagramSVG /></div>
+                <button
+                  onClick={() => setViewMode('video')}
+                  className="mt-3 text-[11px] font-mono font-bold text-accent hover:text-accent-bright transition flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-accent/30"
+                >
+                  <span>🎥</span>
+                  <span>SWITCH TO VIDEO SIMULATION</span>
+                </button>
               </div>
-            ))}
+            )}
+          </div>
+          <div className="p-6 space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-text-primary">Gear Anatomy — Key Circles</h3>
+                <span className="text-[10px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                  STANDARD 20° FULL DEPTH
+                </span>
+              </div>
+              {[
+                { color: '#3B82F6', label: 'Outside Circle (da)', desc: 'Tip diameter — maximum gear extent (d + 2m)' },
+                { color: '#16B8A6', label: 'Pitch Circle (d)', desc: 'Reference circle for rolling contact (m × Z)' },
+                { color: '#f59e0b', label: 'Base Circle (db)', desc: 'Origin circle of involute tooth profile (d × cos α)' },
+                { color: '#ef4444', label: 'Root Circle (df)', desc: 'Bottom clearance of tooth space (d − 2.5m)' },
+              ].map(c => (
+                <div key={c.label} className="flex items-start gap-3 p-2 rounded-lg bg-surface/50 border border-border/40">
+                  <div className="w-3 h-3 rounded-full shrink-0 mt-0.5" style={{ backgroundColor: c.color }} />
+                  <div>
+                    <span className="text-xs font-bold text-text-primary">{c.label}</span>
+                    <span className="text-xs text-text-secondary ml-2">{c.desc}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs text-text-secondary flex items-start gap-2.5">
+              <span className="text-base text-accent">💡</span>
+              <p className="text-[11px] leading-relaxed">
+                <strong className="text-text-primary">Kinematic Insight:</strong> The video simulation demonstrates continuous conjugate action along the line of action tangent to the base circles, ensuring constant angular velocity ratio.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -543,6 +608,19 @@ function TopicTerminology() {
 // T2 — TYPES
 function TopicTypes() {
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [spurViewMode, setSpurViewMode] = useState<'video' | 'diagram'>('video');
+  const [helicalViewMode, setHelicalViewMode] = useState<'video' | 'diagram'>('video');
+  const [bevelViewMode, setBevelViewMode] = useState<'video' | 'diagram'>('video');
+  const [wormViewMode, setWormViewMode] = useState<'video' | 'diagram'>('video');
+  const [rackPinionViewMode, setRackPinionViewMode] = useState<'video' | 'diagram'>('video');
+  const [internalViewMode, setInternalViewMode] = useState<'video' | 'diagram'>('video');
+  const location = useLocation();
+  const isSpurFocus = location.pathname.endsWith('/spur');
+  const isHelicalFocus = location.pathname.endsWith('/helical');
+  const isBevelFocus = location.pathname.endsWith('/bevel');
+  const isWormFocus = location.pathname.endsWith('/worm');
+  const isRackPinionFocus = location.pathname.endsWith('/rack-and-pinion') || location.pathname.endsWith('/rack-pinion');
+  const isInternalFocus = location.pathname.endsWith('/internal') || location.pathname.endsWith('/internal-gear');
   const r1 = useScrollReveal();
   const gearTypes = [
     {
@@ -595,16 +673,844 @@ function TopicTypes() {
         <h2 className="text-xl font-bold text-text-primary mt-0.5">6 Industrial Gear Types</h2>
         <p className="text-xs text-text-secondary mt-1">Each gear type has distinct geometry, working principles and industrial applications. Click <em>Learn More</em> to expand.</p>
       </div>
+
+      {/* Dedicated Spotlight when accessing /topics/gears/types/spur */}
+      {isSpurFocus && (
+        <div className="bg-surface rounded-2xl border border-accent/60 overflow-hidden shadow-xl shadow-accent/5">
+          <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-mono text-accent font-bold">DETAILED FOCUS • PARALLEL SHAFT POWER TRANSMISSION</span>
+              <h3 className="text-xl font-bold text-text-primary mt-0.5">Spur Gear Kinematic Video Simulation</h3>
+              <p className="text-xs text-text-secondary mt-1">High-definition kinematic simulation of involute spur gears transmitting rotation between parallel shafts.</p>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background p-1 rounded-xl border border-border text-xs font-mono">
+              <button
+                onClick={() => setSpurViewMode('video')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  spurViewMode === 'video' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>🎥</span>
+                <span>VIDEO</span>
+              </button>
+              <button
+                onClick={() => setSpurViewMode('diagram')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  spurViewMode === 'diagram' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>📐</span>
+                <span>2D DIAGRAM</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
+              {spurViewMode === 'video' ? (
+                <SpurGearVideoPlayer
+                  className="w-full h-72 sm:h-80 md:h-[340px] rounded-xl"
+                  onSwitchToDiagram={() => setSpurViewMode('diagram')}
+                  showDiagramToggle={true}
+                />
+              ) : (
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full max-w-xs h-64"><SpurGearSVG /></div>
+                  <button
+                    onClick={() => setSpurViewMode('video')}
+                    className="mt-3 text-[11px] font-mono font-bold text-accent hover:text-accent-bright transition flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-accent/30"
+                  >
+                    <span>🎥</span>
+                    <span>SWITCH TO VIDEO SIMULATION</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="p-6 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-text-primary">Key Engineering Characteristics</h4>
+                  <span className="text-[10px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                    PARALLEL AXES
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs text-text-secondary">
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Pure Rolling at Pitch Line:</strong> Teeth engage along line of action tangent to base circles with 20° standard pressure angle.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>No Axial Thrust:</strong> Straight spur teeth produce purely radial and tangential contact forces without axial end-thrust.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Transmission Efficiency:</strong> 98% to 99% mechanical power transmission efficiency per stage when properly lubricated.</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs text-text-secondary flex items-start gap-2.5">
+                <span className="text-base text-accent">💡</span>
+                <p className="text-[11px] leading-relaxed">
+                  <strong className="text-text-primary">Kinematic Insight:</strong> The simulation shows the simultaneous line contact across face width (b) maintaining an exact velocity ratio: \( \omega_1 / \omega_2 = Z_2 / Z_1 = d_2 / d_1 \).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dedicated Spotlight when accessing /topics/gears/types/helical */}
+      {isHelicalFocus && (
+        <div className="bg-surface rounded-2xl border border-accent/60 overflow-hidden shadow-xl shadow-accent/5">
+          <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-mono text-accent font-bold">DETAILED FOCUS • GRADUAL TOOTH ENGAGEMENT &amp; HIGH LOAD</span>
+              <h3 className="text-xl font-bold text-text-primary mt-0.5">Helical Gear Kinematic Video Simulation</h3>
+              <p className="text-xs text-text-secondary mt-1">High-definition simulation of helical gear mesh with inclined teeth providing smooth, progressive contact and higher load capacity.</p>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background p-1 rounded-xl border border-border text-xs font-mono">
+              <button
+                onClick={() => setHelicalViewMode('video')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  helicalViewMode === 'video' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>🎥</span>
+                <span>VIDEO</span>
+              </button>
+              <button
+                onClick={() => setHelicalViewMode('diagram')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  helicalViewMode === 'diagram' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>📐</span>
+                <span>2D DIAGRAM</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
+              {helicalViewMode === 'video' ? (
+                <HelicalGearVideoPlayer
+                  className="w-full h-72 sm:h-80 md:h-[340px] rounded-xl"
+                  onSwitchToDiagram={() => setHelicalViewMode('diagram')}
+                  showDiagramToggle={true}
+                />
+              ) : (
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full max-w-xs h-64"><HelicalGearSVG /></div>
+                  <button
+                    onClick={() => setHelicalViewMode('video')}
+                    className="mt-3 text-[11px] font-mono font-bold text-accent hover:text-accent-bright transition flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-accent/30"
+                  >
+                    <span>🎥</span>
+                    <span>SWITCH TO VIDEO SIMULATION</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="p-6 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-text-primary">Key Engineering Characteristics</h4>
+                  <span className="text-[10px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                    HELIX ANGLE &bull; AXIAL THRUST
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs text-text-secondary">
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Gradual Progressive Engagement:</strong> Teeth engage gradually starting at one point and progressing smoothly across the face width, drastically reducing noise and vibration.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Axial Thrust Load:</strong> The helix angle α creates an axial thrust component along the shaft, requiring thrust bearings or herringbone (double-helical) arrangements.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Higher Contact Ratio:</strong> Multiple pairs of teeth are in contact simultaneously, yielding higher load-carrying capacity than equivalent spur gears.</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs text-text-secondary flex items-start gap-2.5">
+                <span className="text-base text-accent">💡</span>
+                <p className="text-[11px] leading-relaxed">
+                  <strong className="text-text-primary">Design Insight:</strong> Standard industrial helix angles range from 15° to 30°. Normal module \( m_n = m_t \cos\alpha \) governs cutter selection and tooth bending strength.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dedicated Spotlight when accessing /topics/gears/types/bevel */}
+      {isBevelFocus && (
+        <div className="bg-surface rounded-2xl border border-accent/60 overflow-hidden shadow-xl shadow-accent/5">
+          <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-mono text-accent font-bold">DETAILED FOCUS • 90° INTERSECTING SHAFTS &amp; RIGHT-ANGLE DRIVES</span>
+              <h3 className="text-xl font-bold text-text-primary mt-0.5">Bevel Gear Kinematic Video Simulation</h3>
+              <p className="text-xs text-text-secondary mt-1">High-definition simulation of intersecting conical pitch surfaces transmitting rotation and torque across right-angle shafts.</p>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background p-1 rounded-xl border border-border text-xs font-mono">
+              <button
+                onClick={() => setBevelViewMode('video')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  bevelViewMode === 'video' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>🎥</span>
+                <span>VIDEO</span>
+              </button>
+              <button
+                onClick={() => setBevelViewMode('diagram')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  bevelViewMode === 'diagram' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>📐</span>
+                <span>2D DIAGRAM</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
+              {bevelViewMode === 'video' ? (
+                <BevelGearVideoPlayer
+                  className="w-full h-72 sm:h-80 md:h-[340px] rounded-xl"
+                  onSwitchToDiagram={() => setBevelViewMode('diagram')}
+                  showDiagramToggle={true}
+                />
+              ) : (
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full max-w-xs h-64"><BevelGearSVG /></div>
+                  <button
+                    onClick={() => setBevelViewMode('video')}
+                    className="mt-3 text-[11px] font-mono font-bold text-accent hover:text-accent-bright transition flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-accent/30"
+                  >
+                    <span>🎥</span>
+                    <span>SWITCH TO VIDEO SIMULATION</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="p-6 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-text-primary">Key Engineering Characteristics</h4>
+                  <span className="text-[10px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                    90° INTERSECTING AXES
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs text-text-secondary">
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Conical Pitch Surfaces:</strong> Pitch cones roll upon each other without slipping, with common apex located at the shaft intersection point.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Right-Angle Transmission:</strong> Changes direction of drive by 90° (or custom intersection angles &Sigma;) in automotive differentials and machine tool spindles.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Variants:</strong> Available in Straight (simplest), Spiral (smooth &amp; quiet high-speed mesh), and Hypoid (offset non-intersecting shafts).</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs text-text-secondary flex items-start gap-2.5">
+                <span className="text-base text-accent">💡</span>
+                <p className="text-[11px] leading-relaxed">
+                  <strong className="text-text-primary">Design Insight:</strong> For standard 90° bevel gears, pitch cone angles satisfy \( \tan\delta_1 = Z_1 / Z_2 \) and \( \tan\delta_2 = Z_2 / Z_1 \), ensuring \( \delta_1 + \delta_2 = 90^\circ \).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dedicated Spotlight when accessing /topics/gears/types/worm */}
+      {isWormFocus && (
+        <div className="bg-surface rounded-2xl border border-accent/60 overflow-hidden shadow-xl shadow-accent/5">
+          <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-mono text-accent font-bold">DETAILED FOCUS • HIGH RATIO REDUCTION &amp; SELF-LOCKING</span>
+              <h3 className="text-xl font-bold text-text-primary mt-0.5">Worm Gear Kinematic Video Simulation</h3>
+              <p className="text-xs text-text-secondary mt-1">High-definition kinematic simulation of a worm meshing with a worm wheel, demonstrating perpendicular non-intersecting power transmission.</p>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background p-1 rounded-xl border border-border text-xs font-mono">
+              <button
+                onClick={() => setWormViewMode('video')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  wormViewMode === 'video' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>🎥</span>
+                <span>VIDEO</span>
+              </button>
+              <button
+                onClick={() => setWormViewMode('diagram')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  wormViewMode === 'diagram' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>📐</span>
+                <span>2D DIAGRAM</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
+              {wormViewMode === 'video' ? (
+                <WormGearVideoPlayer
+                  className="w-full h-72 sm:h-80 md:h-[340px] rounded-xl"
+                  onSwitchToDiagram={() => setWormViewMode('diagram')}
+                  showDiagramToggle={true}
+                />
+              ) : (
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full max-w-xs h-64"><WormGearSVG /></div>
+                  <button
+                    onClick={() => setWormViewMode('video')}
+                    className="mt-3 text-[11px] font-mono font-bold text-accent hover:text-accent-bright transition flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-accent/30"
+                  >
+                    <span>🎥</span>
+                    <span>SWITCH TO VIDEO SIMULATION</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="p-6 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-text-primary">Key Engineering Characteristics</h4>
+                  <span className="text-[10px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                    HIGH REDUCTION • NON-INTERSECTING 90°
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs text-text-secondary">
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Massive Single-Stage Reduction:</strong> Gear ratios typically range from 5:1 up to 100:1 or higher in an ultra-compact envelope (\( i = Z_2 / z_1 \)).</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Self-Locking Drive (Irreversibility):</strong> When the worm lead angle &gamma; is smaller than the friction angle (&mu; &gt; tan &gamma;), the wheel cannot back-drive the worm, providing inherent safety in hoists and elevators.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Sliding Contact &amp; Thermal Dissipation:</strong> The continuous screw action involves significant sliding friction, requiring bronze wheels, synthetic lubrication, and cooling fins.</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs text-text-secondary flex items-start gap-2.5">
+                <span className="text-base text-accent">💡</span>
+                <p className="text-[11px] leading-relaxed">
+                  <strong className="text-text-primary">Design Insight:</strong> Worm pitch diameter \( d_1 = q \cdot m \), where \( q \) is the diameter quotient (typically 8–16). Lead angle \( \tan\gamma = z_1 / q \).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dedicated Spotlight when accessing /topics/gears/types/rack-and-pinion */}
+      {isRackPinionFocus && (
+        <div className="bg-surface rounded-2xl border border-accent/60 overflow-hidden shadow-xl shadow-accent/5">
+          <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-mono text-accent font-bold">DETAILED FOCUS • ROTARY TO LINEAR MOTION CONVERSION</span>
+              <h3 className="text-xl font-bold text-text-primary mt-0.5">Rack and Pinion Kinematic Video Simulation</h3>
+              <p className="text-xs text-text-secondary mt-1">High-definition kinematic simulation of a circular pinion meshing with a straight linear gear rack, converting rotation into precision linear displacement.</p>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background p-1 rounded-xl border border-border text-xs font-mono">
+              <button
+                onClick={() => setRackPinionViewMode('video')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  rackPinionViewMode === 'video' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>🎥</span>
+                <span>VIDEO</span>
+              </button>
+              <button
+                onClick={() => setRackPinionViewMode('diagram')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  rackPinionViewMode === 'diagram' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>📐</span>
+                <span>2D DIAGRAM</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
+              {rackPinionViewMode === 'video' ? (
+                <RackPinionVideoPlayer
+                  className="w-full h-72 sm:h-80 md:h-[340px] rounded-xl"
+                  onSwitchToDiagram={() => setRackPinionViewMode('diagram')}
+                  showDiagramToggle={true}
+                />
+              ) : (
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full max-w-xs h-64"><RackPinionSVG /></div>
+                  <button
+                    onClick={() => setRackPinionViewMode('video')}
+                    className="mt-3 text-[11px] font-mono font-bold text-accent hover:text-accent-bright transition flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-accent/30"
+                  >
+                    <span>🎥</span>
+                    <span>SWITCH TO VIDEO SIMULATION</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="p-6 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-text-primary">Key Engineering Characteristics</h4>
+                  <span className="text-[10px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                    INFINITE PITCH RADIUS • DIRECT LINEAR DRIVE
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs text-text-secondary">
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Direct Rotary-to-Linear Transformation:</strong> The rack represents a spur gear with an infinite pitch radius (\( r \to \infty \)), producing straight tooth profiles that engage with standard involute pinions.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Linear Travel Relationship:</strong> Linear distance traveled per pinion revolution equals \( L = \pi \cdot d = \pi \cdot m \cdot z \). Linear speed \( v = (\pi \cdot d \cdot n) / 60 \).</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Industrial Applications:</strong> Widely employed in automotive steering racks, CNC machine gantry linear axes, heavy lifters, and railway mountain rack drives.</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs text-text-secondary flex items-start gap-2.5">
+                <span className="text-base text-accent">💡</span>
+                <p className="text-[11px] leading-relaxed">
+                  <strong className="text-text-primary">Design Insight:</strong> For high-precision CNC drives, helical rack and pinion systems with dual-pinion electronic backlash preloading are preferred over straight racks.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dedicated Spotlight when accessing /topics/gears/types/internal */}
+      {isInternalFocus && (
+        <div className="bg-surface rounded-2xl border border-accent/60 overflow-hidden shadow-xl shadow-accent/5">
+          <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-mono text-accent font-bold">DETAILED FOCUS • PLANETARY GEARING &amp; COAXIAL TRANSMISSION</span>
+              <h3 className="text-xl font-bold text-text-primary mt-0.5">Internal Gear Kinematic Video Simulation</h3>
+              <p className="text-xs text-text-secondary mt-1">High-definition kinematic simulation of an external pinion meshing inside a ring gear, demonstrating same-direction rotation and compact planetary packaging.</p>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background p-1 rounded-xl border border-border text-xs font-mono">
+              <button
+                onClick={() => setInternalViewMode('video')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  internalViewMode === 'video' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>🎥</span>
+                <span>VIDEO</span>
+              </button>
+              <button
+                onClick={() => setInternalViewMode('diagram')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition font-bold ${
+                  internalViewMode === 'diagram' ? 'bg-accent text-background shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span>📐</span>
+                <span>2D DIAGRAM</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+            <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-border flex items-center justify-center bg-surface-elevated/30">
+              {internalViewMode === 'video' ? (
+                <InternalGearVideoPlayer
+                  className="w-full h-72 sm:h-80 md:h-[340px] rounded-xl"
+                  onSwitchToDiagram={() => setInternalViewMode('diagram')}
+                  showDiagramToggle={true}
+                />
+              ) : (
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full max-w-xs h-64"><InternalGearSVG /></div>
+                  <button
+                    onClick={() => setInternalViewMode('video')}
+                    className="mt-3 text-[11px] font-mono font-bold text-accent hover:text-accent-bright transition flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-accent/30"
+                  >
+                    <span>🎥</span>
+                    <span>SWITCH TO VIDEO SIMULATION</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="p-6 space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-text-primary">Key Engineering Characteristics</h4>
+                  <span className="text-[10px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20">
+                    CONCAVE-CONVEX MESH • SAME-SENSE ROTATION
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs text-text-secondary">
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Same Direction of Rotation:</strong> Unlike external mating pairs where shafts counter-rotate, the internal ring gear and the driving pinion rotate in the exact same direction.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Center Distance:</strong> For internal gearing, center distance is the difference of radii rather than the sum: <em>a = (d₂ − d₁)/2 = m·(Z₂ − Z₁)/2</em>, allowing an ultra-compact gearbox volume.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-surface/50 border border-border/40 flex items-start gap-2">
+                    <span className="text-accent font-bold">•</span>
+                    <span><strong>Enhanced Tooth Contact Strength:</strong> Concave internal teeth conform closely to convex pinion teeth, significantly increasing the contact area, reducing Hertzian contact stresses, and extending service life.</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-accent/5 border border-accent/20 text-xs text-text-secondary flex items-start gap-2.5">
+                <span className="text-base text-accent">💡</span>
+                <p className="text-[11px] leading-relaxed">
+                  <strong className="text-text-primary">Design Insight:</strong> In epicyclic (planetary) drivetrains, the internal gear serves as the outer Annulus (\( Z_A = Z_S + 2 Z_P \)), delivering high torque density and coaxial shafting.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6 Gear Types Grid */}
       <div ref={r1.ref} className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-700 ${r1.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         {gearTypes.map(gt => (
           <div key={gt.id} className={`bg-surface rounded-2xl border overflow-hidden transition-all ${expanded === gt.id ? 'border-accent/60 shadow-lg shadow-accent/10' : 'border-border hover:border-accent/30'}`}>
-            <div className="h-36 bg-surface-elevated border-b border-border/40 flex items-center justify-center p-3">
-              {gt.icon}
-            </div>
+            {gt.id === 1 ? (
+              <div className="h-44 sm:h-48 bg-[#0D1117] border-b border-border/40 relative overflow-hidden flex items-center justify-center">
+                {spurViewMode === 'video' ? (
+                  <SpurGearVideoPlayer
+                    className="w-full h-full"
+                    onSwitchToDiagram={() => setSpurViewMode('diagram')}
+                    showDiagramToggle={true}
+                  />
+                ) : (
+                  <div className="w-full h-full p-2 flex flex-col items-center justify-center relative bg-surface-elevated">
+                    <div className="w-full h-32 flex items-center justify-center">
+                      <SpurGearSVG />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSpurViewMode('video');
+                      }}
+                      className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-surface border border-accent/40 text-[9px] font-mono text-accent font-bold hover:bg-accent/10 transition flex items-center gap-1 shadow"
+                    >
+                      <span>🎥</span>
+                      <span>VIDEO</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : gt.id === 2 ? (
+              <div className="h-44 sm:h-48 bg-[#0D1117] border-b border-border/40 relative overflow-hidden flex items-center justify-center">
+                {helicalViewMode === 'video' ? (
+                  <HelicalGearVideoPlayer
+                    className="w-full h-full"
+                    onSwitchToDiagram={() => setHelicalViewMode('diagram')}
+                    showDiagramToggle={true}
+                  />
+                ) : (
+                  <div className="w-full h-full p-2 flex flex-col items-center justify-center relative bg-surface-elevated">
+                    <div className="w-full h-32 flex items-center justify-center">
+                      <HelicalGearSVG />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setHelicalViewMode('video');
+                      }}
+                      className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-surface border border-accent/40 text-[9px] font-mono text-accent font-bold hover:bg-accent/10 transition flex items-center gap-1 shadow"
+                    >
+                      <span>🎥</span>
+                      <span>VIDEO</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : gt.id === 3 ? (
+              <div className="h-44 sm:h-48 bg-[#0D1117] border-b border-border/40 relative overflow-hidden flex items-center justify-center">
+                {bevelViewMode === 'video' ? (
+                  <BevelGearVideoPlayer
+                    className="w-full h-full"
+                    onSwitchToDiagram={() => setBevelViewMode('diagram')}
+                    showDiagramToggle={true}
+                  />
+                ) : (
+                  <div className="w-full h-full p-2 flex flex-col items-center justify-center relative bg-surface-elevated">
+                    <div className="w-full h-32 flex items-center justify-center">
+                      <BevelGearSVG />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setBevelViewMode('video');
+                      }}
+                      className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-surface border border-accent/40 text-[9px] font-mono text-accent font-bold hover:bg-accent/10 transition flex items-center gap-1 shadow"
+                    >
+                      <span>🎥</span>
+                      <span>VIDEO</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : gt.id === 4 ? (
+              <div className="h-44 sm:h-48 bg-[#0D1117] border-b border-border/40 relative overflow-hidden flex items-center justify-center">
+                {wormViewMode === 'video' ? (
+                  <WormGearVideoPlayer
+                    className="w-full h-full"
+                    onSwitchToDiagram={() => setWormViewMode('diagram')}
+                    showDiagramToggle={true}
+                  />
+                ) : (
+                  <div className="w-full h-full p-2 flex flex-col items-center justify-center relative bg-surface-elevated">
+                    <div className="w-full h-32 flex items-center justify-center">
+                      <WormGearSVG />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setWormViewMode('video');
+                      }}
+                      className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-surface border border-accent/40 text-[9px] font-mono text-accent font-bold hover:bg-accent/10 transition flex items-center gap-1 shadow"
+                    >
+                      <span>🎥</span>
+                      <span>VIDEO</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : gt.id === 5 ? (
+              <div className="h-44 sm:h-48 bg-[#0D1117] border-b border-border/40 relative overflow-hidden flex items-center justify-center">
+                {rackPinionViewMode === 'video' ? (
+                  <RackPinionVideoPlayer
+                    className="w-full h-full"
+                    onSwitchToDiagram={() => setRackPinionViewMode('diagram')}
+                    showDiagramToggle={true}
+                  />
+                ) : (
+                  <div className="w-full h-full p-2 flex flex-col items-center justify-center relative bg-surface-elevated">
+                    <div className="w-full h-32 flex items-center justify-center">
+                      <RackPinionSVG />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRackPinionViewMode('video');
+                      }}
+                      className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-surface border border-accent/40 text-[9px] font-mono text-accent font-bold hover:bg-accent/10 transition flex items-center gap-1 shadow"
+                    >
+                      <span>🎥</span>
+                      <span>VIDEO</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : gt.id === 6 ? (
+              <div className="h-44 sm:h-48 bg-[#0D1117] border-b border-border/40 relative overflow-hidden flex items-center justify-center">
+                {internalViewMode === 'video' ? (
+                  <InternalGearVideoPlayer
+                    className="w-full h-full"
+                    onSwitchToDiagram={() => setInternalViewMode('diagram')}
+                    showDiagramToggle={true}
+                  />
+                ) : (
+                  <div className="w-full h-full p-2 flex flex-col items-center justify-center relative bg-surface-elevated">
+                    <div className="w-full h-32 flex items-center justify-center">
+                      <InternalGearSVG />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setInternalViewMode('video');
+                      }}
+                      className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-surface border border-accent/40 text-[9px] font-mono text-accent font-bold hover:bg-accent/10 transition flex items-center gap-1 shadow"
+                    >
+                      <span>🎥</span>
+                      <span>VIDEO</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="h-44 sm:h-48 bg-surface-elevated border-b border-border/40 flex items-center justify-center p-3">
+                {gt.icon}
+              </div>
+            )}
             <div className="p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-text-primary">{gt.name}</h3>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent">{gt.badge}</span>
+                <div className="flex items-center gap-1.5">
+                  {gt.id === 1 && (
+                    <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded border border-border text-[9px] font-mono">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSpurViewMode('video');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          spurViewMode === 'video' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        VIDEO
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSpurViewMode('diagram');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          spurViewMode === 'diagram' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        DIAGRAM
+                      </button>
+                    </div>
+                  )}
+                  {gt.id === 2 && (
+                    <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded border border-border text-[9px] font-mono">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setHelicalViewMode('video');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          helicalViewMode === 'video' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        VIDEO
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setHelicalViewMode('diagram');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          helicalViewMode === 'diagram' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        DIAGRAM
+                      </button>
+                    </div>
+                  )}
+                  {gt.id === 3 && (
+                    <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded border border-border text-[9px] font-mono">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBevelViewMode('video');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          bevelViewMode === 'video' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        VIDEO
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBevelViewMode('diagram');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          bevelViewMode === 'diagram' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        DIAGRAM
+                      </button>
+                    </div>
+                  )}
+                  {gt.id === 4 && (
+                    <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded border border-border text-[9px] font-mono">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setWormViewMode('video');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          wormViewMode === 'video' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        VIDEO
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setWormViewMode('diagram');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          wormViewMode === 'diagram' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        DIAGRAM
+                      </button>
+                    </div>
+                  )}
+                  {gt.id === 5 && (
+                    <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded border border-border text-[9px] font-mono">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRackPinionViewMode('video');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          rackPinionViewMode === 'video' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        VIDEO
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRackPinionViewMode('diagram');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          rackPinionViewMode === 'diagram' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        DIAGRAM
+                      </button>
+                    </div>
+                  )}
+                  {gt.id === 6 && (
+                    <div className="flex items-center gap-1 bg-surface-elevated p-0.5 rounded border border-border text-[9px] font-mono">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setInternalViewMode('video');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          internalViewMode === 'video' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        VIDEO
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setInternalViewMode('diagram');
+                        }}
+                        className={`px-1.5 py-0.5 rounded transition font-bold ${
+                          internalViewMode === 'diagram' ? 'bg-accent text-background' : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        DIAGRAM
+                      </button>
+                    </div>
+                  )}
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-accent">{gt.badge}</span>
+                </div>
               </div>
               <p className="text-[11px] text-text-secondary leading-relaxed">{gt.principle}</p>
               {expanded === gt.id && (
@@ -652,8 +1558,6 @@ function TopicSelection() {
     { title: 'Mechanical Arrangement', items: [7, 8] },
     { title: 'Material & Service', items: [9, 10] },
   ];
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
-  const toggle = (k: string) => setChecked(p => ({ ...p, [k]: !p[k] }));
   return (
     <div className="space-y-8">
       <div className="bg-surface rounded-2xl border border-border p-6">
@@ -681,29 +1585,6 @@ function TopicSelection() {
             </div>
           </div>
         ))}
-        {/* Selection checklist */}
-        <div>
-          <SectionLabel text="SELECTION CHECKLIST" />
-          <div className="bg-surface rounded-2xl border border-border p-6 space-y-3">
-            <h3 className="text-sm font-bold text-text-primary mb-3">Application Requirement Checklist <SourceBadge /></h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {factors.map(f => {
-                const c = !!checked[f.num];
-                return (
-                  <label key={f.num} htmlFor={`sel-${f.num}`} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all select-none ${c ? 'border-accent/50 bg-accent/10' : 'border-border bg-surface-elevated hover:border-accent/30'}`}>
-                    <input id={`sel-${f.num}`} type="checkbox" checked={c} onChange={() => toggle(f.num)} className="sr-only" />
-                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${c ? 'bg-accent border-accent' : 'bg-surface border-border'}`}>
-                      {c && <svg className="w-2.5 h-2.5 text-background" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M1.5 5l2.5 2.5 4.5-4" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                    </div>
-                    <span className="text-xs">{f.num}. {f.label}</span>
-                    {c && <span className="ml-auto text-[10px] font-mono text-accent">✓</span>}
-                  </label>
-                );
-              })}
-            </div>
-            <p className="text-[11px] text-text-secondary pt-2">{Object.values(checked).filter(Boolean).length}/10 factors evaluated. Material choice should always consider actual operating conditions and engineering requirements.</p>
-          </div>
-        </div>
       </div>
       <NavRow backPath="/topics/gears" backLabel="GEARS HUB" prev={{ path: '/topics/gears/types', label: 'TYPES' }} next={{ path: '/topics/gears/ratio', label: 'GEAR RATIO' }} />
     </div>
@@ -1149,14 +2030,9 @@ function TopicHowToDraw() {
 
 // T9 — REVERSE ENGINEERING
 function TopicReverseEng() {
-  const [beforeChecked, setBeforeChecked] = useState<Record<string, boolean>>({});
-  const [afterChecked, setAfterChecked] = useState<Record<string, boolean>>({});
   const [expanded, setExpanded] = useState<string | null>('inspection');
   const r1 = useScrollReveal();
   const r2 = useScrollReveal();
-
-  const toggleBefore = (k: string) => setBeforeChecked(p => ({ ...p, [k]: !p[k] }));
-  const toggleAfter = (k: string) => setAfterChecked(p => ({ ...p, [k]: !p[k] }));
 
   const workflow = [
     { id: '01', icon: '🔭', title: 'Physical Gear', desc: 'Obtain the physical gear sample to be reverse engineered.' },
@@ -1171,32 +2047,6 @@ function TopicReverseEng() {
     { id: '10', icon: '🏭', title: 'Manufacturing', desc: 'Manufacture the replacement gear to the drawing specification.' },
     { id: '11', icon: '🎯', title: 'Final Production', desc: 'Install, validate function and document the complete replacement.' },
   ];
-
-  const beforeItems = [
-    { k: 'type', label: 'Gear type identified' },
-    { k: 'teeth', label: 'Number of teeth counted' },
-    { k: 'module', label: 'Module determined' },
-    { k: 'pa', label: 'Pressure angle identified' },
-    { k: 'od', label: 'Outside diameter measured' },
-    { k: 'bore', label: 'Bore measured' },
-    { k: 'fw', label: 'Face width measured' },
-    { k: 'kw', label: 'Keyway checked' },
-    { k: 'mat', label: 'Material identified' },
-  ];
-
-  const afterItems = [
-    { k: 'dims', label: 'Dimensions verified' },
-    { k: 'tooth', label: 'Tooth data verified' },
-    { k: 'tol', label: 'Tolerances added' },
-    { k: 'mat2', label: 'Material specified' },
-    { k: 'ht', label: 'Heat treatment specified where required' },
-    { k: 'sf', label: 'Surface finish specified where required' },
-    { k: 'rev', label: 'Revision updated' },
-    { k: 'rev2', label: 'Drawing reviewed' },
-  ];
-
-  const beforePct = Math.round((Object.values(beforeChecked).filter(Boolean).length / beforeItems.length) * 100);
-  const afterPct = Math.round((Object.values(afterChecked).filter(Boolean).length / afterItems.length) * 100);
 
   const mistakes = [
     'Incorrect tooth count', 'Wrong module', 'Incorrect pressure angle', 'Incorrect bore size',
@@ -1322,49 +2172,6 @@ function TopicReverseEng() {
         ))}
       </div>
 
-      {/* Dual Checklists */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Before modeling */}
-        <div className="bg-surface rounded-2xl border border-border p-5 space-y-3">
-          <h4 className="text-sm font-bold text-text-primary">Before Modeling Checklist</h4>
-          <div className="h-1.5 bg-surface-elevated rounded-full overflow-hidden"><div className="h-full bg-accent transition-all duration-500" style={{ width: `${beforePct}%` }} /></div>
-          <span className="text-[10px] font-mono text-text-secondary">{beforePct}% complete</span>
-          <div className="space-y-2">
-            {beforeItems.map(item => {
-              const c = !!beforeChecked[item.k];
-              return (
-                <label key={item.k} htmlFor={`bm-${item.k}`} className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${c ? 'border-accent/40 bg-accent/10' : 'border-border hover:border-accent/20'}`}>
-                  <input id={`bm-${item.k}`} type="checkbox" checked={c} onChange={() => toggleBefore(item.k)} className="sr-only" />
-                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${c ? 'bg-accent border-accent' : 'bg-surface border-border'}`}>
-                    {c && <svg className="w-2.5 h-2.5 text-background" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M1.5 5l2.5 2.5 4.5-4" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                  </div>
-                  <span className={`text-xs ${c ? 'line-through text-text-secondary' : 'text-text-primary'}`}>{item.label}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-        {/* Before drawing release */}
-        <div className="bg-surface rounded-2xl border border-border p-5 space-y-3">
-          <h4 className="text-sm font-bold text-text-primary">Before Drawing Release Checklist</h4>
-          <div className="h-1.5 bg-surface-elevated rounded-full overflow-hidden"><div className="h-full bg-accent transition-all duration-500" style={{ width: `${afterPct}%` }} /></div>
-          <span className="text-[10px] font-mono text-text-secondary">{afterPct}% complete</span>
-          <div className="space-y-2">
-            {afterItems.map(item => {
-              const c = !!afterChecked[item.k];
-              return (
-                <label key={item.k} htmlFor={`dr-${item.k}`} className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${c ? 'border-accent/40 bg-accent/10' : 'border-border hover:border-accent/20'}`}>
-                  <input id={`dr-${item.k}`} type="checkbox" checked={c} onChange={() => toggleAfter(item.k)} className="sr-only" />
-                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${c ? 'bg-accent border-accent' : 'bg-surface border-border'}`}>
-                    {c && <svg className="w-2.5 h-2.5 text-background" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M1.5 5l2.5 2.5 4.5-4" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                  </div>
-                  <span className={`text-xs ${c ? 'line-through text-text-secondary' : 'text-text-primary'}`}>{item.label}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-      </div>
       <NavRow backPath="/topics/gears" backLabel="GEARS HUB" prev={{ path: '/topics/gears/how-to-draw', label: 'HOW TO DRAW' }} />
     </div>
   );

@@ -768,18 +768,6 @@ export function GeneralToleranceSection() {
 // 5. KEY POINTS TO REMEMBER & DESIGN-ENGINEER CHECKLIST
 // ═════════════════════════════════════════════════════════════════
 export function ChecklistAndSummarySection() {
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({
-    'tolerances-checked': true,
-    'manufacturing-economy': false,
-    'interchangeability': false,
-    'gdt-geometry': false,
-    'inspection-metrology': false,
-  });
-
-  const toggleCheck = (id: string) => {
-    setCheckedItems((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
   return (
     <div className="space-y-8">
       {/* 6. Key Points to Remember */}
@@ -822,7 +810,7 @@ export function ChecklistAndSummarySection() {
           </div>
 
           <div className="bg-surface p-4 rounded-xl border border-indigo-500/20 space-y-1">
-            <div className="text-indigo-400 font-bold text-sm">Geometric Tolerance (GD&T)</div>
+            <div className="text-indigo-400 font-bold text-sm">Geometric Tolerance (GD&amp;T)</div>
             <p className="text-[11px] text-text-secondary font-sans leading-relaxed">
               Controls shape, orientation, location, and runout geometry.
             </p>
@@ -859,7 +847,7 @@ export function ChecklistAndSummarySection() {
         </div>
       </div>
 
-      {/* Design-Engineer Checklist */}
+      {/* Design-Engineer Verification — Static */}
       <div className="bg-surface border border-border rounded-2xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -867,7 +855,7 @@ export function ChecklistAndSummarySection() {
               FINAL STAGE QUALITY GATE
             </span>
             <h4 className="text-lg font-black text-text-primary mt-1">
-              DESIGN-ENGINEER VERIFICATION CHECKLIST
+              DESIGN-ENGINEER VERIFICATION
             </h4>
           </div>
           <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full">
@@ -882,60 +870,50 @@ export function ChecklistAndSummarySection() {
         <div className="space-y-3 font-mono text-xs">
           {[
             {
-              id: 'tolerances-checked',
-              title: '“TOLERANCES CHECKED” (MANDATORY IN BOOK CHECKLIST)',
+              title: '"TOLERANCES CHECKED" (MANDATORY)',
               desc: 'Every critical dimension has explicit limits; unspecified dimensions are bounded by the general tolerance title block.',
               critical: true,
             },
             {
-              id: 'manufacturing-economy',
               title: 'Manufacturing Economy & Process Capability',
               desc: 'Tolerances are realistic for chosen machinery (CNC turning, milling, grinding) without causing excessive scrap or cost spikes.',
               critical: false,
             },
             {
-              id: 'interchangeability',
               title: 'Interchangeability & Assembly Fit Guaranteed',
               desc: 'Shaft and hole clearance/interference limits verified under worst-case condition (MMC / LMC).',
               critical: false,
             },
             {
-              id: 'gdt-geometry',
               title: 'GD&T Geometric Controls Complete',
               desc: 'Features whose functionality depends on form, orientation, location, or runout have appropriate feature control frames.',
               critical: false,
             },
             {
-              id: 'inspection-metrology',
               title: 'Inspection & Gauging Feasibility',
               desc: 'Calipers, micrometers, CMM probes, or functional go/no-go gauges can physically access and measure each tolerance zone.',
               critical: false,
             },
-          ].map((item) => (
+          ].map((item, idx) => (
             <div
-              key={item.id}
-              onClick={() => toggleCheck(item.id)}
-              className={`p-4 rounded-xl border transition cursor-pointer flex items-start gap-3.5 ${
-                checkedItems[item.id]
-                  ? item.critical
-                    ? 'bg-cyan-500/15 border-cyan-400 text-text-primary'
-                    : 'bg-emerald-500/15 border-emerald-400 text-text-primary'
-                  : 'bg-surface-elevated border-border text-text-secondary hover:border-accent/40'
+              key={idx}
+              className={`p-4 rounded-xl border flex items-start gap-3.5 ${
+                item.critical
+                  ? 'bg-cyan-500/15 border-cyan-400 text-text-primary'
+                  : 'bg-surface-elevated border-border text-text-secondary'
               }`}
             >
               <div
                 className={`w-5 h-5 rounded flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 border ${
-                  checkedItems[item.id]
-                    ? item.critical
-                      ? 'bg-cyan-400 text-slate-950 border-cyan-400'
-                      : 'bg-emerald-400 text-slate-950 border-emerald-400'
-                    : 'bg-surface border-border text-transparent'
+                  item.critical
+                    ? 'bg-cyan-400 text-slate-950 border-cyan-400'
+                    : 'bg-surface border-border text-text-secondary'
                 }`}
               >
-                ✓
+                {String(idx + 1).padStart(2, '0')}
               </div>
               <div className="space-y-1">
-                <div className={`font-bold ${checkedItems[item.id] ? (item.critical ? 'text-cyan-300' : 'text-emerald-300') : 'text-text-primary'}`}>
+                <div className={`font-bold ${item.critical ? 'text-cyan-300' : 'text-text-primary'}`}>
                   {item.title}
                 </div>
                 <div className="text-[11px] font-sans text-slate-300 leading-relaxed">

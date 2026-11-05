@@ -163,6 +163,43 @@ export default function TopicsMegaMenu({ isOpen, onClose, onToggle }: TopicsMega
   const [mobileExpanded2, setMobileExpanded2] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuLeftOffset, setMenuLeftOffset] = useState<number>(0);
+
+  // Auto-clamp dropdown position so it never overflows off-screen
+  useEffect(() => {
+    if (!isOpen) {
+      setMenuLeftOffset(0);
+      return;
+    }
+
+    const updatePosition = () => {
+      if (!containerRef.current || !menuRef.current) return;
+      const buttonRect = containerRef.current.getBoundingClientRect();
+      const menuWidth = menuRef.current.offsetWidth;
+      const viewportWidth = window.innerWidth;
+      const padding = 16;
+
+      const naturalRight = buttonRect.left + menuWidth;
+
+      if (naturalRight > viewportWidth - padding) {
+        const overflow = naturalRight - (viewportWidth - padding);
+        const maxShift = buttonRect.left - padding;
+        const actualShift = Math.min(overflow, Math.max(0, maxShift));
+        setMenuLeftOffset(-actualShift);
+      } else {
+        setMenuLeftOffset(0);
+      }
+    };
+
+    updatePosition();
+    const timer = setTimeout(updatePosition, 30);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [isOpen, activeLevel1, activeLevel2]);
 
   // Reset opened sub-dropdowns whenever the menu closes
   useEffect(() => {
@@ -249,15 +286,20 @@ export default function TopicsMegaMenu({ isOpen, onClose, onToggle }: TopicsMega
       {/* DESKTOP CASCADING DROPDOWNS (Hidden on Mobile) */}
       {isOpen && (
         <div
+          ref={menuRef}
           role="menu"
           aria-label="Topics Menu"
           onMouseLeave={onClose}
+          style={{
+            transform: `translateX(${menuLeftOffset}px)`,
+            transition: 'transform 180ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
           className="hidden lg:flex items-start absolute left-0 top-full mt-1.5 z-50 animate-in fade-in duration-150"
         >
           {/* ═══════════════════════════════════════════════════
               BOX 1: MAIN DROPDOWN BOX (OPENS FIRST)
               ═══════════════════════════════════════════════════ */}
-          <div className="w-80 sm:w-84 bg-[#0D1117]/95 border border-border/80 rounded-2xl shadow-2xl p-2.5 backdrop-blur-xl shrink-0">
+          <div className="w-72 sm:w-80 bg-[#0D1117]/95 border border-border/80 rounded-2xl shadow-2xl p-2.5 backdrop-blur-xl shrink-0">
             {/* Header */}
             <div className="px-3 py-1.5 mb-1.5 border-b border-border/50 flex items-center justify-between text-[10px] font-mono uppercase text-text-secondary">
               <span className="flex items-center gap-1.5 font-bold">
@@ -330,7 +372,7 @@ export default function TopicsMegaMenu({ isOpen, onClose, onToggle }: TopicsMega
               BOX 2: SUB DROPDOWN BOX (OPENS AFTER CLICKING OPTION)
               ═══════════════════════════════════════════════════ */}
           {currentL1?.children && currentL1.children.length > 0 && (
-            <div className="ml-2 w-80 sm:w-88 bg-[#0D1117]/95 border border-border/80 rounded-2xl shadow-2xl p-2.5 backdrop-blur-xl shrink-0 animate-in fade-in slide-in-from-left-2 duration-150">
+            <div className="ml-2 w-72 sm:w-80 bg-[#0D1117]/95 border border-border/80 rounded-2xl shadow-2xl p-2.5 backdrop-blur-xl shrink-0 animate-in fade-in slide-in-from-left-2 duration-150">
               {/* Header */}
               <div className="px-3 py-1.5 mb-1.5 border-b border-border/50 flex items-center justify-between text-[10px] font-mono uppercase text-text-secondary">
                 <div className="flex items-center gap-1.5 font-bold text-accent truncate">
@@ -401,7 +443,7 @@ export default function TopicsMegaMenu({ isOpen, onClose, onToggle }: TopicsMega
               BOX 3: 3RD LEVEL SUB DROPDOWN BOX (OPENS AFTER CLICKING SUB-OPTION)
               ═══════════════════════════════════════════════════ */}
           {currentL2?.children && currentL2.children.length > 0 && (
-            <div className="ml-2 w-72 sm:w-80 bg-[#0D1117]/95 border border-border/80 rounded-2xl shadow-2xl p-2.5 backdrop-blur-xl shrink-0 animate-in fade-in slide-in-from-left-2 duration-150">
+            <div className="ml-2 w-68 sm:w-76 bg-[#0D1117]/95 border border-border/80 rounded-2xl shadow-2xl p-2.5 backdrop-blur-xl shrink-0 animate-in fade-in slide-in-from-left-2 duration-150">
               {/* Header */}
               <div className="px-3 py-1.5 mb-1.5 border-b border-border/50 flex items-center justify-between text-[10px] font-mono uppercase text-text-secondary">
                 <span className="font-bold text-accent truncate">{currentL2.title}</span>

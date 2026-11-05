@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import WheelchairAnalysis3D, { type AnalysisMode } from './WheelchairAnalysis3D';
+import WheelchairAnalysisVideoPlayer from './WheelchairAnalysisVideoPlayer';
 
 interface EngineeringAnalysisSectionProps {
   onBack?: () => void;
@@ -325,21 +326,6 @@ const bestPractices = [
   { num: '10', icon: '📁', title: 'Project Records', desc: 'Maintain complete project records for future reference.' },
 ];
 
-// ─── Checklist items data ─────────────────────────────────────────────────────
-
-const checklistItems = [
-  { key: 'cadModel', label: 'CAD Model Completed', icon: '🖥️' },
-  { key: 'drafting', label: 'Drafting Completed', icon: '📐' },
-  { key: 'dimensions', label: 'Dimensions Verified', icon: '📏' },
-  { key: 'gdt', label: 'GD&T Applied', icon: '⊕' },
-  { key: 'tolerances', label: 'Tolerances Checked', icon: '🔍' },
-  { key: 'bom', label: 'BOM Prepared', icon: '📋' },
-  { key: 'titleBlock', label: 'Title Block Verified', icon: '📄' },
-  { key: 'analysis', label: 'Analysis Completed', icon: '📊' },
-  { key: 'designReview', label: 'Design Review Approved', icon: '✅' },
-  { key: 'finalRelease', label: 'Final Release Document Prepared', icon: '🚀' },
-];
-
 // ─── Scroll reveal hook ───────────────────────────────────────────────────────
 
 function useScrollReveal(threshold = 0.12) {
@@ -369,28 +355,8 @@ function useScrollReveal(threshold = 0.12) {
 
 export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalysisSectionProps) {
   const [activeTab, setActiveTab] = useState<AnalysisMode>('deformation');
-  const [viewMode, setViewMode] = useState<'3d' | '2d'>('3d');
-  const [checkedList, setCheckedList] = useState<Record<string, boolean>>(
-    Object.fromEntries(checklistItems.map((item) => [item.key, false]))
-  );
-  const [showComplete, setShowComplete] = useState(false);
+  const [viewMode, setViewMode] = useState<'video' | '3d' | '2d'>('video');
   const [showBackToTop, setShowBackToTop] = useState(false);
-
-  const completedCount = Object.values(checkedList).filter(Boolean).length;
-  const progressPct = Math.round((completedCount / checklistItems.length) * 100);
-
-  const toggleCheck = (key: string) => {
-    setCheckedList((prev) => {
-      const next = { ...prev, [key]: !prev[key] };
-      setShowComplete(Object.values(next).every(Boolean));
-      return next;
-    });
-  };
-
-  const resetChecklist = () => {
-    setCheckedList(Object.fromEntries(checklistItems.map((item) => [item.key, false])));
-    setShowComplete(false);
-  };
 
   useEffect(() => {
     const handleScroll = () => setShowBackToTop(window.scrollY > 500);
@@ -405,8 +371,6 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
   const workflowReveal = useScrollReveal();
   const caseReveal = useScrollReveal();
   const bestReveal = useScrollReveal();
-  const checkReveal = useScrollReveal();
-
   const activeTabData = caseStudyTabs.find((t) => t.key === activeTab)!;
 
   return (
@@ -617,9 +581,20 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-text-primary mb-1">Practical Engineering Case Study</h2>
-            <p className="text-xs text-text-secondary">Wheelchair Frame Analysis — interactive 3D structural analysis simulation.</p>
+            <p className="text-xs text-text-secondary">Wheelchair Frame Analysis — dynamic FEA structural analysis simulation video.</p>
           </div>
           <div className="flex items-center p-1 rounded-xl bg-surface border border-border">
+            <button
+              onClick={() => setViewMode('video')}
+              className={`text-[11px] font-mono font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                viewMode === 'video'
+                  ? 'bg-accent text-background shadow-sm'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <span>🎥</span>
+              <span>Video Simulation</span>
+            </button>
             <button
               onClick={() => setViewMode('3d')}
               className={`text-[11px] font-mono font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
@@ -645,7 +620,51 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
           </div>
         </div>
 
-        {viewMode === '3d' ? (
+        {viewMode === 'video' ? (
+          <div className="space-y-5">
+            {/* Context callout */}
+            <div className="bg-surface rounded-xl border border-border p-4 sm:p-5">
+              <h4 className="text-sm font-bold text-text-primary mb-1.5 flex items-center gap-2">
+                <span>♿</span> Why Analyze a Wheelchair Frame?
+              </h4>
+              <p className="text-xs text-text-secondary leading-relaxed">
+                A wheelchair frame is a critical structural assembly that must reliably support occupant weight (typically 100–150+ kg)
+                during daily movement, curb impacts, and cyclic fatigue. Engineering analysis ensures safety factors are met without excessive weight,
+                revealing stress concentration hot-spots at axle junctions, seat rails, and cross-braces before fabrication.
+              </p>
+            </div>
+
+            {/* Video Player */}
+            <WheelchairAnalysisVideoPlayer
+              onSwitchTo3d={() => setViewMode('3d')}
+              show3dToggle={true}
+            />
+
+            {/* FEA Case Study Parameters & Key Takeaways */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="bg-surface rounded-xl border border-border p-4 space-y-1">
+                <span className="text-[10px] font-mono text-accent font-bold">APPLIED LOAD</span>
+                <div className="text-lg font-extrabold text-red-400 font-mono">150 kg (~1471 N)</div>
+                <p className="text-[11px] text-text-secondary">Standard occupant design payload including dynamic impact factor.</p>
+              </div>
+              <div className="bg-surface rounded-xl border border-border p-4 space-y-1">
+                <span className="text-[10px] font-mono text-accent font-bold">CRITICAL REGION</span>
+                <div className="text-lg font-extrabold text-amber-400 font-mono">Axle &amp; Seat Junction</div>
+                <p className="text-[11px] text-text-secondary">Maximum bending moment occurs at rear wheel mounting brackets.</p>
+              </div>
+              <div className="bg-surface rounded-xl border border-border p-4 space-y-1">
+                <span className="text-[10px] font-mono text-accent font-bold">SAFETY FACTOR</span>
+                <div className="text-lg font-extrabold text-emerald-400 font-mono">FoS &ge; 2.5 Target</div>
+                <p className="text-[11px] text-text-secondary">Required safety margin for medical structural equipment compliance.</p>
+              </div>
+              <div className="bg-surface rounded-xl border border-border p-4 space-y-1">
+                <span className="text-[10px] font-mono text-accent font-bold">MATERIAL USED</span>
+                <div className="text-lg font-extrabold text-accent font-mono">Al 6061-T6 / EN8</div>
+                <p className="text-[11px] text-text-secondary">Lightweight tubular alloy optimized for strength-to-weight ratio.</p>
+              </div>
+            </div>
+          </div>
+        ) : viewMode === '3d' ? (
           <div className="space-y-4">
             {/* Context callout */}
             <div className="bg-surface rounded-xl border border-border p-4 sm:p-5">
@@ -662,6 +681,7 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
             <WheelchairAnalysis3D
               activeTab={activeTab}
               onTabChange={setActiveTab}
+              onSwitchToVideo={() => setViewMode('video')}
             />
           </div>
         ) : (
@@ -761,6 +781,13 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
                 <div className="pt-2 border-t border-border/40">
                   <p className="text-xs text-text-secondary leading-relaxed">{activeTabData.description}</p>
                 </div>
+                <button
+                  onClick={() => setViewMode('video')}
+                  className="w-full py-2 rounded-lg border border-accent/40 bg-accent/10 hover:bg-accent/20 text-accent font-mono text-xs font-bold transition flex items-center justify-center gap-1.5 mt-2"
+                >
+                  <span>🎥</span>
+                  <span>SWITCH TO VIDEO SIMULATION</span>
+                </button>
               </div>
             </div>
           </div>
@@ -797,115 +824,6 @@ export default function EngineeringAnalysisSection({ onBack }: EngineeringAnalys
               <p className="text-[11px] text-text-secondary leading-relaxed">{bp.desc}</p>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* ── SECTION 6: CHECKLIST ─────────────────────────────────────────────── */}
-      <div
-        ref={checkReveal.ref}
-        className={`space-y-6 transition-all duration-700 delay-100 ${checkReveal.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-mono text-accent font-bold tracking-widest">SECTION 06</span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        <div className="bg-surface rounded-2xl border border-border overflow-hidden">
-          <div className="bg-surface-elevated px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <span className="text-[10px] font-mono text-accent font-bold tracking-widest">INTERACTIVE CHECKLIST</span>
-              <h2 className="text-base font-bold text-text-primary mt-0.5">Design Engineer's Checklist Before Release</h2>
-              <p className="text-[11px] text-text-secondary mt-0.5">
-                Note: Checklist state is not saved permanently — it resets on page refresh.
-              </p>
-            </div>
-            <button
-              id="ea-reset-checklist"
-              onClick={resetChecklist}
-              className="text-[11px] font-mono font-bold px-4 py-2 rounded-lg border border-border bg-surface text-text-secondary hover:border-red-500/50 hover:text-red-400 transition-all"
-            >
-              ↺ RESET CHECKLIST
-            </button>
-          </div>
-
-          <div className="p-6 space-y-6">
-            {/* Progress bar */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-text-secondary">Completion Progress</span>
-                <span className={`font-bold ${progressPct === 100 ? 'text-green-400' : 'text-accent'}`}>
-                  {completedCount}/{checklistItems.length} — {progressPct}%
-                </span>
-              </div>
-              <div className="h-2.5 bg-surface-elevated rounded-full overflow-hidden border border-border">
-                <div
-                  className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{
-                    width: `${progressPct}%`,
-                    background:
-                      progressPct === 100
-                        ? '#22c55e'
-                        : 'linear-gradient(90deg, #16B8A6, #3B82F6)',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Completion message */}
-            {showComplete && (
-              <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl p-4">
-                <span className="text-2xl">🎉</span>
-                <div>
-                  <h4 className="text-sm font-bold text-green-400">All Items Completed!</h4>
-                  <p className="text-xs text-text-secondary">Design is ready for release review. Proceed with final sign-off.</p>
-                </div>
-              </div>
-            )}
-
-            {/* Checklist items */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {checklistItems.map((item) => {
-                const checked = checkedList[item.key];
-                return (
-                  <label
-                    key={item.key}
-                    htmlFor={`ea-check-${item.key}`}
-                    className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all select-none ${
-                      checked
-                        ? 'bg-accent/10 border-accent/50 text-text-primary'
-                        : 'bg-surface-elevated border-border hover:border-accent/30 text-text-secondary'
-                    }`}
-                  >
-                    <input
-                      id={`ea-check-${item.key}`}
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleCheck(item.key)}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${
-                        checked ? 'bg-accent border-accent' : 'bg-surface border-border'
-                      }`}
-                    >
-                      {checked && (
-                        <svg className="w-3 h-3 text-background" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
-                          <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-lg shrink-0">{item.icon}</span>
-                    <span className={`text-sm font-medium transition-all flex-1 ${checked ? 'line-through text-text-secondary' : ''}`}>
-                      {item.label}
-                    </span>
-                    {checked && (
-                      <span className="text-[10px] font-mono text-accent font-bold shrink-0">✓ DONE</span>
-                    )}
-                  </label>
-                );
-              })}
-            </div>
-          </div>
         </div>
       </div>
 
